@@ -176,7 +176,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   child: ElevatedButton(
                       onPressed: () => _saveUser(context),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
