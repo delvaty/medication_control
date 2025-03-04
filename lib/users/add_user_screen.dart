@@ -42,7 +42,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
     }
   }
 
-  void _saveUser(BuildContext context)  {
+  void _saveUser(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -56,10 +56,10 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
       if (widget.userID == null) {
         // Agregar nuevo usuario
-         usersCollection.add(person.toMap());
+        usersCollection.add(person.toMap());
       } else {
         // Editar usuario existente
-       usersCollection.doc(widget.userID).update(person.toMap());
+        usersCollection.doc(widget.userID).update(person.toMap());
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -72,6 +72,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title:
             Text(widget.userID == null ? 'Agregar Usuario' : "Editar usuario"),
@@ -176,7 +177,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   child: ElevatedButton(
                       onPressed: () => _saveUser(context),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 14,),
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
