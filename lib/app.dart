@@ -18,7 +18,6 @@ class _MainAppState extends State<MainApp> {
     if (onboardingComplete) {
       setState(() => _showOnboarding = false);
     }
-    
   }
 
   @override
@@ -26,7 +25,7 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       title: 'Control de Medicamentos',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: _showOnboarding ?  OnboardingScreen() :  HomeScreen(),
+      home: _showOnboarding ? OnboardingScreen() : HomeScreen(),
     );
   }
 }

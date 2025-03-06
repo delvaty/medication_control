@@ -1,4 +1,3 @@
-
 class Person {
   final String name;
   final String lastname;
@@ -11,8 +10,13 @@ class Person {
     required this.gender,
     required this.dateOfBirth,
   });
-Map<String, dynamic> toMap() {
-    return {"name": name, "lastname": lastname, "gender": gender, "dateOfBirth": dateOfBirth.toIso8601String()};
+  Map<String, dynamic> toMap() {
+    return {
+      "name": name,
+      "lastname": lastname,
+      "gender": gender,
+      "dateOfBirth": dateOfBirth.toIso8601String()
+    };
   }
 
   factory Person.fromMap(Map<String, dynamic> map) {
@@ -20,11 +24,9 @@ Map<String, dynamic> toMap() {
       name: map['name'] ?? "",
       lastname: map['lastname'] ?? "",
       gender: map['gender'] ?? "",
-      dateOfBirth: map['dateOfBirth'] != null ? DateTime.parse(map["dateOfBirth"]) : DateTime.now(),
+      dateOfBirth: map['dateOfBirth'] != null
+          ? DateTime.parse(map["dateOfBirth"])
+          : DateTime.now(),
     );
   }
-
 }
-
-
-

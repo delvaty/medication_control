@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:medication_control/models/users.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class AddUserScreen extends StatefulWidget {
   final String? userID; //Puede ser nulo si estamos agregando un usuario nuevo
@@ -61,9 +62,26 @@ class _AddUserScreenState extends State<AddUserScreen> {
         // Editar usuario existente
         usersCollection.doc(widget.userID).update(person.toMap());
       }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+              title: "Éxito",
+              message: "Usuario guardado correctamente",
+              contentType: ContentType.success)));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar usuario: $e')),
+        SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'Error',
+            message: 'No puede contener campos vacíos: $e',
+            contentType: ContentType.failure,
+          ),
+        ),
       );
     }
     Navigator.pop(context);
@@ -177,8 +195,9 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   child: ElevatedButton(
                       onPressed: () => _saveUser(context),
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 14,),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(

@@ -20,7 +20,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: OnboardingScreen(), // 🚀 Muestra siempre la pantalla de Onboarding
+      debugShowCheckedModeBanner: false,
+      home: OnboardingScreen(),
     );
   }
 }
