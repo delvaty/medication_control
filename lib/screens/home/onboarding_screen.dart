@@ -3,9 +3,9 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:medication_control/screens/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final VoidCallback onComplete;
+  const OnboardingScreen({super.key, required this.onComplete});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -17,6 +17,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _completeOnboarding(context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboardingComplete', true);
+    widget.onComplete();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => HomeScreen()),
     );
@@ -26,13 +27,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Image.asset('assests/images/$assetName', width: width);
   } */
 
- Widget _buildImage(String assetName) {
+  Widget _buildImage(String assetName) {
     return SizedBox(
-      width: double.infinity,  // Usa todo el ancho disponible
-      height: 400,  // Altura fija más grande
+      width: double.infinity, // Usa todo el ancho disponible
+      height: 400, // Altura fija más grande
       child: Image.asset(
         'assests/images/$assetName',
-        fit: BoxFit.contain,  // Ajusta la imagen manteniendo proporciones
+        fit: BoxFit.contain, // Ajusta la imagen manteniendo proporciones
       ),
     );
   }
@@ -42,7 +43,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     const pageDecoration = PageDecoration(
       pageColor: Color(0xFFC0F0F7),
       titleTextStyle: TextStyle(
-        fontSize: 28, 
+        fontSize: 28,
         fontWeight: FontWeight.bold,
         color: Colors.black,
         fontFamily: 'Montserrat',
@@ -91,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       skipOrBackFlex: 0,
       nextFlex: 0,
       skip: const Text(
-        'Skip', 
+        'Skip',
         style: TextStyle(
           fontWeight: FontWeight.w600,
           color: Colors.black,

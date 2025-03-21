@@ -1,7 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// lib/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
-import '../medications/user_medication_screen.dart';
-import '../../users/add_user_screen.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:medication_control/models/users.dart';
+import 'package:medication_control/users/add_user_screen.dart';
+import '../../controllers/home_controller.dart';
+
+import '../../services/user_service.dart';
+import '../../widgets/app_drawer.dart';
+import '../../widgets/expandable_fab.dart';
+import '../../widgets/user_list.dart';
+
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,159 +19,139 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex =
-      0; // índice de la pestaña seleccionada y guarda que pestaña está seleccionada en el ButtonNavigatorBar
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final HomeController _controller = HomeController();
+  final UserService _userService = UserService();
 
-  // Actualiza _selectedIndex cuando el usuario toca un ícono en la barra de navegación
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex =
-          index; // Cambia la pestaña cuando el usuario toca una opción
-    });
+  @override
+  void initState() {
+    super.initState();
+    _controller.initAnimations(this);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('MediSafe')),
-      drawer: Drawer(
-        backgroundColor: Color(0xFFF5F5F5),
-        child: ListView(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: DrawerHeader(
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      child: Icon(Icons.person),
-                    ),
-                    SizedBox(height: 10, width: 30),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Usuario",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        Text("Editar perfil",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text(
-                "Perfiles",
-                style: TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w300, height: 3),
-              ),
-              subtitle: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.green[400],
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    "Añadir perfil",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            Divider(
-              height: 25,
-              thickness: 1,
-            ),
-            ListTile(
-              title: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.blueAccent[400],
-                    child: Icon(
-                      Icons.logout,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    "Cerrar sesión",
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w400, height: 3),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-              
-              
-            ),
-            
-          ],
-        ),
-      ),
-      body:
-          _buildPageContent(), // Muestra el contenido según la pestaña seleccionada
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.medication),
-            label: 'Medicamentos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.more_vert),
-            label: 'Más',
-          ),
-        ],
-        currentIndex: _selectedIndex, // Indica que pestña está activa
-        selectedItemColor:
-            Theme.of(context).primaryColor, // Color del ícono seleccionado
-        onTap: _onItemTapped,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddUserScreen(),
-          ),
-        ),
-        child: const Icon(Icons.add),
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _showMedicationModal(BuildContext context) {
+    showModalBottomSheet(
+      elevation: 10,
+      backgroundColor: Colors.amber,
+      context: context,
+      builder: (context) => Container(
+        width: 400,
+        height: 250,
+        alignment: Alignment.center,
+        child: const Text('Breathe in... Breathe out...'),
       ),
     );
   }
 
-  // Los métodos que empiezan con _build suelen usarse para descomponer partes de la interfaz de usuario en funciones más pequeñas y reutilizables
-// Este método genera el contenido de la pantalla dependiendo de _selectedIndex
-  Widget _buildPageContent() {
-    if (_selectedIndex == 0) {
-      return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("users").snapshots(),
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        if (_controller.isExpanded) {
+          setState(() {
+            _controller.toggleMenu();
+          });
+        }
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: const Color(0xFFE5E5EA),
+        appBar: AppBar(
+          backgroundColor: Colors.blueAccent,
+          title: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                _scaffoldKey.currentState?.openDrawer();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: const [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage("https://picsum.photos/200"),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    "robertdd",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        drawer: const AppDrawer(),
+        body: _buildPageContent(context),
+        bottomNavigationBar: NavigationBar(
+          onDestinationSelected: (index) {
+            setState(() {
+              _controller.onItemTapped(index);
+            });
+          },
+          backgroundColor: Colors.white,
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(LineIcons.home, size: 28,),
+              icon: Icon(
+                Icons.home_outlined,
+              ),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(LineIcons.medicalBriefcase, size: 28,),
+              label: 'Medications',
+            ),
+            NavigationDestination(
+              icon: Icon(LineIcons.bars, size: 28,),
+              label: 'More',
+            ),
+          ],
+          selectedIndex: _controller.selectedIndex,
+          indicatorColor: Colors.blueAccent,
+        ),
+        floatingActionButton: ExpandableFAB(
+          controller: _controller,
+          onAddMedicinePressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddUserScreen()),
+            );
+          },
+          onAddDosePressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddUserScreen()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageContent(BuildContext context) {
+    if (_controller.selectedIndex == 0) {
+      return StreamBuilder<List<Person>>(
+        stream: _userService.getUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
@@ -170,95 +159,54 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text("Error: ${snapshot.error}"),
             );
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
               child: Text("No hay usuarios"),
             );
           }
-          // docs es una lista (List<QueryDocumentSnapshot>) que contiene todos los documentos dentro de la colección "users"
-          // ! se usa para decirle a Dart que data nunca será null en este punto.
-          final users = snapshot.data!
-              .docs; // Se obtienen los documentos(docs)de la colección de usuarios en Firebase Firestore
-          return ListView(
-            children: users.map((doc) {
-              final userData = doc.data() as Map<String,
-                  dynamic>; // Esto convierte los datos del documento en un mapa de tipo Map<String, dynamic>, para que luego se pueda acceder al nombre del usuario con userData["name"].
-              return ListTile(
-                title: Text(userData["name"]),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        UserMedicationScreen(user: userData["name"]),
-                  ),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddUserScreen(
-                                  userID: doc.id, userData: userData),
-                            ),
-                          );
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {
-                          _confirmDeleteUser(doc.id);
-                        },
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ))
-                  ],
-                ),
-              );
-            }).toList(),
+          
+          final users = snapshot.data!;
+          return UserList(
+            users: users,
+            onDeleteUser: (userId) {
+              _userService.deleteUser(userId);
+            },
           );
         },
       );
-    } else if (_selectedIndex == 1) {
+    } else if (_controller.selectedIndex == 1) {
       return Center(
-        child: Text("Página de Medicamentos"),
+        child: ElevatedButton(
+            onPressed: () => _showMedicationModal(context),
+            child: const Text("Show the BottomSheet")),
       );
     } else {
-      return Center(
-        child: Text("Más opciones"),
-      );
-    }
-  }
-
-  void _confirmDeleteUser(String userId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Eliminar Usuario"),
-        content:
-            const Text("¿Estás seguro de que quieres eliminar este usuario?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar"),
-          ),
-          TextButton(
-            onPressed: () {
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(userId)
-                  .delete();
-              Navigator.pop(context);
-            },
-            child: const Text("Eliminar", style: TextStyle(color: Colors.red)),
+      return Stack(
+        children: [
+          Container(
+            color: Colors.grey[200],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const Text('Elemento 1'),
+                const Text('Elemento 2'),
+                Expanded(
+                  child: Container(
+                    color: Colors.blue,
+                    child: const Center(
+                      child: Text('Elemento expandido'),
+                    ),
+                  ),
+                ),
+                const Text('Elemento 3'),
+                const Text('Elemento 4'),
+              ],
+            ),
           ),
         ],
-      ),
-    );
+      );
+    }
   }
 }

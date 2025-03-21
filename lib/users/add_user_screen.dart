@@ -49,6 +49,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
     }
     try {
       Person person = Person(
+        id: widget.userID ?? "",
         name: _nameController.text.trim(),
         lastname: _lastNameController.text.trim(),
         gender: _gender,
@@ -64,7 +65,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           elevation: 0,
-          behavior: SnackBarBehavior.floating,
+          behavior: SnackBarBehavior.fixed,
           backgroundColor: Colors.transparent,
           content: AwesomeSnackbarContent(
               title: "Éxito",
@@ -74,11 +75,11 @@ class _AddUserScreenState extends State<AddUserScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           elevation: 0,
-          behavior: SnackBarBehavior.floating,
+          behavior: SnackBarBehavior.fixed,
           backgroundColor: Colors.transparent,
           content: AwesomeSnackbarContent(
             title: 'Error',
-            message: 'No puede contener campos vacíos: $e',
+            message: 'Error, no se ha podido guardar el usuario: $e',
             contentType: ContentType.failure,
           ),
         ),

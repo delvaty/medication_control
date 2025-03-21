@@ -1,9 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:medication_control/screens/home/home_screen.dart';
 import 'firebase_options.dart';
-import 'users/add_user_screen.dart';
-import 'screens/home/onboarding_screen.dart';
+import 'theme/theme_data.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,17 +18,20 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
+  
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: myTheme,
       debugShowCheckedModeBanner: false,
-      home: OnboardingScreen(),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MainApp extends StatefulWidget {
+/* class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
@@ -122,4 +127,4 @@ class Medication {
     required this.time,
     this.taken = false,
   });
-}
+} */

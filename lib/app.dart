@@ -12,20 +12,37 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool _showOnboarding = true;
-  Future<void> completeOnboarding() async {
+
+  @override
+  void initState() {
+    super.initState();
+    checkOnboardingStatus();
+  }
+
+  Future<void> checkOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final onboardingComplete = prefs.getBool('onboardingComplete') ?? false;
     if (onboardingComplete) {
-      setState(() => _showOnboarding = false);
+      setState(() {
+        _showOnboarding = !onboardingComplete;
+      });
     }
+  }
+
+  Future<void> completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboardingComplete', true);
+    setState(() {
+      _showOnboarding = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Control de Medicamentos',
+      
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: _showOnboarding ? OnboardingScreen() : HomeScreen(),
+      home: _showOnboarding ? OnboardingScreen(onComplete: completeOnboarding) : HomeScreen(),
     );
   }
 }
