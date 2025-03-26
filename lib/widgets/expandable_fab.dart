@@ -9,11 +9,11 @@ class ExpandableFAB extends StatelessWidget {
   final Function() onAddDosePressed;
 
   const ExpandableFAB({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onAddMedicinePressed,
     required this.onAddDosePressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

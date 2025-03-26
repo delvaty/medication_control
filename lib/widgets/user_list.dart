@@ -10,10 +10,10 @@ class UserList extends StatelessWidget {
   final Function(String) onDeleteUser;
 
   const UserList({
-    Key? key,
+    super.key,
     required this.users,
     required this.onDeleteUser,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

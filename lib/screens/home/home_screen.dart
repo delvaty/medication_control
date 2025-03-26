@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:medication_control/models/users.dart';
 import 'package:medication_control/users/add_user_screen.dart';
+import 'package:medication_control/users/register_user.dart';
 import '../../controllers/home_controller.dart';
 
 import '../../services/user_service.dart';
@@ -108,18 +109,18 @@ class _HomeScreenState extends State<HomeScreen>
           backgroundColor: Colors.white,
           destinations: const <Widget>[
             NavigationDestination(
-              selectedIcon: Icon(LineIcons.home, size: 28,),
+              selectedIcon: Icon(LineIcons.home, size: 30, ),
               icon: Icon(
                 Icons.home_outlined,
               ),
-              label: 'Home',
+              label: "Home",
             ),
             NavigationDestination(
-              icon: Icon(LineIcons.medicalBriefcase, size: 28,),
+              icon: Icon(LineIcons.medicalBriefcase, size: 30, ),
               label: 'Medications',
             ),
             NavigationDestination(
-              icon: Icon(LineIcons.bars, size: 28,),
+              icon: Icon(LineIcons.bars, size: 30, ),
               label: 'More',
             ),
           ],
@@ -131,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen>
           onAddMedicinePressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AddUserScreen()),
+              MaterialPageRoute(builder: (context) => const RegistroPerfilScreen()),
             );
           },
           onAddDosePressed: () {
